@@ -297,12 +297,13 @@ CWBitcore.signRawTransaction = function(unsignedHex, cwPrivateKey) {
   wkMap[address] = new bitcore.WalletKey({network:NETWORK, privKey:cwPrivateKey.getBitcoreECKey()});
 
   // unserialize raw transaction
-  var unsignedTx = CWBitcore.parseRawTransaction(unsignedHex).fee(500000);   
+  var unsignedTx = CWBitcore.parseRawTransaction(unsignedHex);   
 
   // prepare  signed transaction
   var signedTx = new bitcore.TransactionBuilder();
   //signedTx.tx = CWBitcore.prepareSignedTransaction(unsignedTx);
   signedTx.tx = unsignedTx;
+  console.log(signedTx.tx);
 
   for (var i=0; i < unsignedTx.ins.length; i++) {
       
