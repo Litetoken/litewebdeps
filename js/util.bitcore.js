@@ -329,9 +329,6 @@ CWBitcore.signRawTransaction = function(unsignedHex, cwPrivateKey) {
     }
 
   }
-  
-  signedTx.tx.fee(500000);
-  console.log(signedTx.tx.getFee());
   return signedTx.tx.serialize().toString('hex');
 }
 
