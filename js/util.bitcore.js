@@ -329,7 +329,7 @@ CWBitcore.signRawTransaction = function(unsignedHex, cwPrivateKey) {
     }
 
   }
-  signedTx.givenFeeSat = MIN_FEE ;
+  signedTx.tx.givenFeeSat = MIN_FEE ;
   return signedTx.tx.serialize().toString('hex');
 }
 
