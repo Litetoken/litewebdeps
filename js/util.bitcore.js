@@ -300,7 +300,8 @@ CWBitcore.signRawTransaction = function(unsignedHex, cwPrivateKey) {
   var unsignedTx = CWBitcore.parseRawTransaction(unsignedHex);   
 
   // prepare  signed transaction
-  var signedTx = new bitcore.TransactionBuilder();
+  var opts={fee:0.005};
+  var signedTx = new bitcore.TransactionBuilder(opts);
   //signedTx.tx = CWBitcore.prepareSignedTransaction(unsignedTx);
   signedTx.tx = unsignedTx;
 
