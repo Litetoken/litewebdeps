@@ -5,8 +5,8 @@ var IS_MOBILE_OR_TABLET = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Op
 var MAX_INT = Math.pow(2, 63) - 1;
 var UNIT = 100000000; //# satoshis in whole
 var MIN_FEE = 500000; // in satoshis (== .0002 LTC)
-var REGULAR_DUST_SIZE = 5011;
-var MULTISIG_DUST_SIZE = 6011;
+var REGULAR_DUST_SIZE = 0.5 * UNIT;
+var MULTISIG_DUST_SIZE = UNIT ;
 var MIN_PRIME_BALANCE = 50000; //in satoshis ... == .0005
 var ASSET_CREATION_FEE_XLT = 0.5; //in normalized XLT
 var DIVIDEND_FEE_PER_HOLDER = 0.0002
