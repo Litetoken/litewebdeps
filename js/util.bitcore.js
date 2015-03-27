@@ -303,7 +303,7 @@ CWBitcore.signRawTransaction = function(unsignedHex, cwPrivateKey) {
   var signedTx = new bitcore.TransactionBuilder();
   //signedTx.tx = CWBitcore.prepareSignedTransaction(unsignedTx);
   signedTx.tx = unsignedTx;
-  console.log(signedTx.tx);
+  console.log(signedTx);
 
   for (var i=0; i < unsignedTx.ins.length; i++) {
       
