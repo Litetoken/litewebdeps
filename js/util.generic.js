@@ -244,8 +244,8 @@ function currency(amount, unit) {
   return smartFormat(normalizeQuantity(amount), 4, 4) + ' ' + unit;
 }
 
-function satoshiToXCP(amount) {
-  return currency(amount, 'XCP');
+function satoshiToXLT(amount) {
+  return currency(amount, 'XLT');
 }
 
 function round(amount, decimals) {

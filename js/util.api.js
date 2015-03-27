@@ -160,7 +160,7 @@ function makeJSONRPCCall(endpoints, method, params, timeout, onSuccess, onError)
 }
 
 function _makeJSONAPICall(destType, endpoints, method, params, timeout, onSuccess, onError, httpMethod) {
-  /*Makes a JSON RPC API call to a specific counterpartyd/counterblockd endpoint.
+  /*Makes a JSON RPC API call to a specific litetokensd/liteblockd endpoint.
    
     -endpoints: The specific API endpoint URL string to make the API request to.
      If a list of endpoint URLs are specified instead of a single URL, then we attempt the request
@@ -177,20 +177,20 @@ function _makeJSONAPICall(destType, endpoints, method, params, timeout, onSucces
   if(typeof(httpMethod)==='undefined') httpMethod = "POST"; //default to POST
   assert(httpMethod == "POST" || httpMethod == "GET", "Invalid HTTP method");
   
-  //make JSON API call to counterblockd
-  if(destType == "counterblockd") {
+  //make JSON API call to liteblockd
+  if(destType == "liteblockd") {
     makeJSONRPCCall(endpoints, method, params, timeout, onSuccess, onError);
-  } else if(destType == "counterpartyd") {
-    //make JSON API call to counterblockd, which will proxy it to counterpartyd
-    makeJSONRPCCall(endpoints, "proxy_to_counterpartyd", {"method": method, "params": params }, timeout, onSuccess, onError);
+  } else if(destType == "litetokensd") {
+    //make JSON API call to liteblockd, which will proxy it to litetokensd
+    makeJSONRPCCall(endpoints, "proxy_to_litetokensd", {"method": method, "params": params }, timeout, onSuccess, onError);
   }
 }
 
 function _getDestTypeFromMethod(method) {
   //based on the method, determine the endpoints list to use
-  var destType = "counterpartyd";
-  if(['is_ready', 'get_reflected_host_info', 'is_chat_handle_in_use','record_btc_open_order',
-      'get_messagefeed_messages_by_index', 'get_normalized_balances', 'get_required_btcpays',
+  var destType = "litetokensd";
+  if(['is_ready', 'get_reflected_host_info', 'is_chat_handle_in_use','record_ltc_open_order',
+      'get_messagefeed_messages_by_index', 'get_normalized_balances', 'get_required_ltcpays',
       'get_chain_address_info', 'get_chain_block_height', 'get_chain_txns_status',
       'get_num_users_online', 'get_chat_handle', 'store_chat_handle', 'is_wallet_online', 'get_preferences', 'store_preferences',
       'get_raw_transactions', 'get_balance_history', 'get_last_n_messages',
@@ -201,14 +201,14 @@ function _getDestTypeFromMethod(method) {
       'parse_base64_feed', 'get_open_rps_count', 'get_user_rps', 
       'get_users_pairs', 'get_market_orders', 'get_market_trades', 'get_markets_list', 'get_market_details',
       'get_pubkey_for_address', 'create_armory_utx', 'convert_armory_signedtx_to_raw_hex', 'create_support_case',
-      'get_escrowed_balances', 'proxy_to_autobtcescrow', 'get_vennd_machine'].indexOf(method) >= 0) {
-    destType = "counterblockd";
+      'get_escrowed_balances', 'proxy_to_autoltcescrow', 'get_vennd_machine'].indexOf(method) >= 0) {
+    destType = "liteblockd";
   }
   return destType;
 }
 
 function supportUnconfirmedChangeParam(method) {
-  return method.split("_").shift()=="create" && _getDestTypeFromMethod(method)=="counterpartyd";
+  return method.split("_").shift()=="create" && _getDestTypeFromMethod(method)=="litetokensd";
 }
 
 function _multiAPIPrimative(method, params, onFinished) {
@@ -238,7 +238,7 @@ function _multiAPIPrimative(method, params, onFinished) {
         
         if(method != "is_ready") {
           //525 DETECTION (needed here and in failoverAPI() as failoverAPI() doesn't use this primative)
-          //detect a special case of all servers returning code 525, which would mean counterpartyd had a reorg and/or we are upgrading
+          //detect a special case of all servers returning code 525, which would mean litetokensd had a reorg and/or we are upgrading
           var allNotCaughtUp = true;
           for(var j=0;j < gatheredResults.length; j++) {
             if(!gatheredResults['jqXHR'] || gatheredResults['jqXHR'].status != '525') {
@@ -264,10 +264,10 @@ function _multiAPIPrimative(method, params, onFinished) {
  
 /*
  AVAILABLE API CALL METHODS:
- * failoverAPI: Used for all counterpartyd get_ API requests (for now...later we may want to move to multiAPINewest)
- * multiAPI: Used for storing counterblockd state data (store_preferences, store_chat_handle, etc)
- * multiAPINewest: Used for fetching state data from counterblockd (e.g. get_preferences, get_chat_handle)
- * multiAPIConsensus: Used for all counterpartyd create_ API requests
+ * failoverAPI: Used for all litetokensd get_ API requests (for now...later we may want to move to multiAPINewest)
+ * multiAPI: Used for storing liteblockd state data (store_preferences, store_chat_handle, etc)
+ * multiAPINewest: Used for fetching state data from liteblockd (e.g. get_preferences, get_chat_handle)
+ * multiAPIConsensus: Used for all litetokensd create_ API requests
 */
 
 function failoverAPI(method, params, onSuccess, onError) {
@@ -287,7 +287,7 @@ function failoverAPI(method, params, onSuccess, onError) {
   }
   //525 DETECTION (needed here and in _multiAPIPrimative) - wrap onError (so that this works even for user supplied onError)
   onErrorOverride = function(jqXHR, textStatus, errorThrown, endpoint) {
-    //detect a special case of all servers returning code 525, which would mean counterpartyd had a reorg and/or we are upgrading
+    //detect a special case of all servers returning code 525, which would mean litetokensd had a reorg and/or we are upgrading
     //TODO: this is not perfect in this failover case now because we only see the LAST error. We are currently assuming
     // that if a) the LAST server returned a 525, and b) all servers are erroring out or down, that all servers are
     // probably returning 525s or updating (or messed up somehow) and we should just log the client out to be safe about it.
@@ -354,13 +354,13 @@ function multiAPIConsensus(method, params, onSuccess, onConsensusError, onSysErr
     onSysError = function(jqXHR, textStatus, errorThrown, endpoint) {
       $.jqlog.debug(textStatus);
       var message = textStatus;
-      var noBtcPos = textStatus.indexOf("Insufficient bitcoins");
+      var noBtcPos = textStatus.indexOf("Insufficient litecoins");
       if (noBtcPos != -1) {
         var endMessage = textStatus.indexOf(")", noBtcPos) + 1;
 
         message = '<b class="errorColor">' + textStatus.substr(noBtcPos, endMessage-noBtcPos)
-          + '</b>. You must have a small amount of BTC in this address to pay the Bitcoin miner fees. Please fund this address and try again.<br/><br/>'
-          + '<a href="https://www.counterparty.co/resources/faqs/why-do-i-need-small-amounts-of-bitcoin-to-do-things-in-counterwallet/" target="_blank">More information on why this is necessary.</a>';
+          + '</b>. You must have a small amount of LTC in this address to pay the Litecoin miner fees. Please fund this address and try again.<br/><br/>'
+          + '<a href="https://www.litetokens.co/resources/faqs/why-do-i-need-small-amounts-of-litecoin-to-do-things-in-litewallet/" target="_blank">More information on why this is necessary.</a>';
       
       } else {
         message = describeError(jqXHR, textStatus, errorThrown);

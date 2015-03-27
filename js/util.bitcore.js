@@ -8,7 +8,7 @@ var CWHierarchicalKey = function(passphrase, password) {
     checkArgType(password, "string");
     passphrase = CWBitcore.decrypt(passphrase, password);
   }
-  // same as bitcoinjs-lib :
+  // same as litecoinjs-lib :
   // m : masterkery / 0' : first private derivation / 0 : external account / i : index
   this.basePath = 'm/0\'/0/';
   this.useOldHierarchicalKey = false;
@@ -51,12 +51,12 @@ CWHierarchicalKey.prototype.getOldAddressesInfos = function(callback) {
     cwkeys[address] = cwk;
   }
 
-  Counterblock.getBalances(addresses, cwkeys, callback);
+  Payblock.getBalances(addresses, cwkeys, callback);
   
 }
 
 // This function return an Bitcore HierarchicalKey instance
-// compatible with old counterwallet. ie generates
+// compatible with old litewallet. ie generates
 // sames addresses
 // seed: hex string
 CWHierarchicalKey.prototype.oldHierarchicalKeyFromSeed = function(seed) {
@@ -65,7 +65,7 @@ CWHierarchicalKey.prototype.oldHierarchicalKeyFromSeed = function(seed) {
   // "historical" reason we keep seed as string to not
   // change generated addresses from the same passphrase.
   var words = bytesToWordArray(seed);  
-  var hash = CryptoJS.HmacSHA512(words, 'Bitcoin seed');
+  var hash = CryptoJS.HmacSHA512(words, 'Litecoin seed');
   hash = wordArrayToBytes(hash);
   hash = bitcore.Buffer(hash);
   

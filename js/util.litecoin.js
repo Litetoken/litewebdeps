@@ -56,7 +56,7 @@ function smartFormat(num, truncateDecimalPlacesAtMin, truncateDecimalPlacesTo) {
 }
 
 function assetsToAssetPair(asset1, asset2) {
-  //NOTE: This MUST use the same logic/rules as counterblockd's assets_to_asset_pair() function in lib/util.py
+  //NOTE: This MUST use the same logic/rules as liteblockd's assets_to_asset_pair() function in lib/util.py
   var base = null;
   var quote = null;
 
@@ -133,8 +133,8 @@ function getAddressLabel(address) {
 }
 
 function testnetBurnDetermineEarned(blockHeight, burned) {
-  //burned is the quantity of BTC to burn (as a float -- normalized value)
-  //XCP quantity returned is as a float -- normalized value
+  //burned is the quantity of LTC to burn (as a float -- normalized value)
+  //XLT quantity returned is as a float -- normalized value
   burned = denormalizeQuantity(burned);
   var total_time = TESTNET_BURN_END - TESTNET_BURN_START;
   var partial_time = TESTNET_BURN_END - blockHeight;
@@ -143,7 +143,7 @@ function testnetBurnDetermineEarned(blockHeight, burned) {
   return normalizeQuantity(earned);
 }
 
-// from bitcoinjs-lib
+// from litecoinjs-lib
 function bytesToBase64(bytes) {
   var base64map = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
   var base64 = []
